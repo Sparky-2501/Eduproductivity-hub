@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EduProductivity Hub | Study Smarter - Realtime</title>
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons --><script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- UPDATED: Added Playfair Display for creative headers -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Define color variables for both themes */
+        :root {
+            /* Light Theme Defaults (Used by Tailwind classes directly) */
+            --primary: #4f46e5; /* Indigo-600 */
+            --bg: #f3f4f6; /* Gray-100 */
+            --card: #ffffff;
+            --text-color: #1f2937; /* Gray-800 */
+            --accent-cyan: #22d3ee; /* Cyan-400 */
+            --accent-purple: #8b5cf6; /* Violet-500 */
+        }
+        [data-theme='dark'] {
+            --primary: #818cf8; /* Indigo-400 (lighter for contrast) */
+            --bg: #1e293b; /* Slate-800 */
+            --card: #334155; /* Slate-700 */
+            --text-color: #f1f5f9; /* Slate-100 */
+            --accent-cyan: #22d3ee;
+            --accent-purple: #c084fc;
+        }
+
+        /* Apply global theme variables */
+        body {
+            font-family: 'Inter', sans-serif; /* Keep Inter for body readability */
+            background: var(--bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            line-height: 1.5;
+            transition: background 0.3s, color 0.3s;
+        }
+        .bg-page { background-color: var(--bg); }
+        .bg-card { background-color: var(--card); }
+        .text-default { color: var(--text-color); }
+        .text-primary-accent { color: var(--primary); }
+
+        /* NEW: Custom class for distinct, elegant headers */
+        .font-header {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Page transitions and animations */
+        section {
+            display: none;
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+        section.active {
+            display: block;
+        }
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(0);
+        }
+        .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-5px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .btn-shadow:hover {
+            box-shadow: 0 6px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+        .logo-link {
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .nav-link-standard {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #4b5563; /* Gray-600 */
+        }
+        .nav-link-standard:hover {
+            color: var(--primary);
+            background-color: #eef2ff; /* Indigo-50 */
+        }
+
+        /* NEW: Animation for scroll reveal */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; } /* Added delay-4 for stagger */
+        
+        /* POMODORO SPECIFIC ANIMATION CLASSES */
+        .pomodoro-card {
+            transition: all 0.4s ease-in-out;
+        }
+        .pulse-focus {
+            animation: pulse-focus-key 0.6s ease-out;
+        }
+        .pulse-break {
+            animation: pulse-break-key 0.6s ease-out;
+        }
+        /* Color change keyframes */
+        @keyframes pulse-focus-key {
+            0% { border-color: #06b6d4; box-shadow: 0 0 10px #06b6d4; }
+            50% { border-color: #4f46e5; box-shadow: 0 0 20px #4f46e5; }
+            100% { border-color: #06b6d4; box-shadow: none; }
+        }
+        @keyframes pulse-break-key {
+            0% { border-color: #6366f1; box-shadow: 0 0 10px #6366f1; }
+            50% { border-color: #f59e0b; box-shadow: 0 0 20px #f59e0b; }
+            100% { border-color: #6366f1; box-shadow: none; }
+        }
+        /* Button press animation */
+        #startPauseBtn:active {
+            transform: scale(0.98);
+            filter: brightness(1.1);
+        }
+        
+        /* NEW: Initial State for Tool Card Bounce (Removed opacity: 0 to fix Home page visibility) */
+        .tool-card-animate {
+            /* opacity: 0; - REMOVED TO FIX BUG */
+            transform: translateY(0);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        
+        /* NEW: Hero Image Glow */
+        .hero-image-glow {
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.5); /* Initial glow color (Indigo-600) */
+            animation: hero-glow 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes hero-glow {
+            from { box-shadow: 0 0 10px rgba(79, 70, 229, 0.4); }
+            to { box-shadow: 0 0 30px rgba(34, 211, 238, 0.8); } /* Fades to Cyan */
+        }
+        
+        /* NEW: Floating icon animation for tools/features */
+        .icon-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* FIX: Ensure chat messages container shows scrollbar when content overflows */
+        #chat-messages {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="antialiased" data-theme="light">
+
+    <!-- Notification Container (Replaces alert()) --><div id="notification-container" class="fixed top-4 right-4 z-50 space-y-2">
+        <!-- Notifications will be injected here --></div>
+
+    <!-- NAVIGATION: BACKGROUND CHANGED TO CLEAN WHITE --><nav class="sticky top-0 z-20 flex justify-between items-center px-4 md:px-8 py-4 bg-white shadow-md backdrop-blur-sm">
+        <!-- Logo Link - Now directs to Home --><a href="#" onclick="showSection('home')" class="2xl font-extrabold text-indigo-600 logo-link">EduProductivity Hub</a>
+        
+        <!-- Main Navigation Links - NOW ALWAYS VISIBLE --><div class="flex flex-wrap space-x-2 md:space-x-4 items-center nav-links">
+            <a href="#" data-target="home" class="font-semibold nav-link-standard">Home</a>
+            <a href="#" data-target="about" class="font-semibold nav-link-standard">About Us</a>
+            
+            <!-- NEW GROUPED TOOLS LINK -->
+            <a href="#" data-target="tools" class="font-semibold nav-link-standard">Tools</a>
+            
+            <!-- THEME TOGGLE BUTTON -->
+            <button id="theme-toggle" onclick="toggleTheme()" class="text-gray-600 hover:text-indigo-600 transition p-2 rounded-full">
+                <i data-lucide="moon" id="theme-icon" class="w-6 h-6"></i>
+            </button>
+            
+            <a href="#" data-target="profile" id="nav-profile-link" class="bg-indigo-600 text-white hover:bg-indigo-700 px-5 py-2.5 rounded-lg font-bold transition duration-150 shadow-md ml-6">Login / Profile</a>
+        </div>
+        
+        <!-- Mobile Menu Toggle - REMOVED --></nav>
+    
+    <!-- Mobile Menu Overlay - REMOVED ENTIRELY FOR CLEANUP --><div id="mobile-menu" class="hidden fixed inset-0 bg-white z-40 p-6 pt-20 flex flex-col space-y-4 shadow-xl">
+        <a href="#" data-target="home" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">Home</a>
+        <a href="#" data-target="about" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">About Us</a>
+        
+        <a href="#" data-target="pomodoro" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">Pomodoro Timer</a>
+        <a href="#" data-target="vocab" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">Vocabulary Builder</a>
+        <a href="#" data-target="todo" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">To-Do List (Realtime)</a>
+        <a href="#" data-target="notes" class="text-lg font-semibold text-gray-800 hover:text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">Notes (AI Enhanced)</a>
+
+        <a href="#" data-target="profile" class="text-lg font-semibold text-indigo-600 py-2 border-b" onclick="toggleMobileMenu()">Login / Profile</a>
+    </div>
+
+    <!-- HOME SECTION --><section id="home" class="active">
+        <!-- Hero Section --><div class="bg-indigo-700 text-white p-6 md:p-12 rounded-2xl shadow-2xl overflow-hidden transform transition duration-500 ease-in-out hover:scale-[1.01] hover:shadow-indigo-500/50">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
+                        Master Your Focus. Elevate Your Learning.
+                    </h1>
+                    <p class="text-indigo-200 text-lg">
+                        The all-in-one productivity suite for students and professionals. Track tasks, build vocabulary, and perfect your study routine.
+                    </p>
+                    <button class="cta-button bg-cyan-400 text-indigo-900 font-bold px-8 py-3 rounded-xl shadow-lg hover:bg-cyan-300 transition duration-200 btn-shadow" data-target="tools" onclick="showSection('tools')">
+                        Start Learning Now <i data-lucide="arrow-right" class="w-5 h-5 inline-block ml-2"></i>
+                    </button>
+                </div>
+                <div class="hidden md:block">
+                    <!-- IMAGE URL REPLACED with FAST CDN URL and GLOW CLASS -->
+                    <img class="w-full h-auto rounded-xl shadow-lg opacity-90 hero-image-glow" 
+                        src="https://images.unsplash.com/photo-1546877239-012b1d3d6e5d?fit=crop&w=600&h=400" 
+                        alt="A focused student working on a laptop with books and notes surrounding her." 
+                        onerror="this.onerror=null; this.src='https://placehold.co/600x400/312e81/ffffff?text=Focused+Student';"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress & Streaks Tracker - MOVED HERE FROM PROFILE PAGE --><div id="homeProgressTracker" class="mt-16 text-center p-8 bg-card rounded-2xl shadow-2xl max-w-2xl mx-auto space-y-6 border-t-4 border-indigo-600">
+            <i data-lucide="activity" class="w-10 h-10 text-indigo-500 mx-auto mb-2"></i>
+            <h3 class="text-2xl font-bold text-primary-accent mb-4">Your Progress & Streaks</h3>
+            
+            <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200">
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="p-3 bg-white rounded-lg shadow-sm">
+                        <p id="focusStreakDisplay" class="text-3xl font-extrabold text-indigo-600">0</p>
+                        <p class="text-xs text-gray-500 mt-1">Focus Streak (Days)</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg shadow-sm">
+                        <p id="tasksTodayDisplay" class="text-3xl font-extrabold text-green-600">0</p>
+                        <p class="text-xs text-gray-500 mt-1">Tasks Completed (Today)</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg shadow-sm">
+                        <p id="totalVocabAttempts" class="text-3xl font-extrabold text-amber-600">0</p>
+                        <p class="text-xs text-gray-500 mt-1">Vocab Attempts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Progress Tracker --><!-- Features Overview --><div class="mt-16 text-center">
+            <h2 class="text-3xl font-bold text-default mb-10">Tools Designed for Success</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Applied tool-card-animate class to trigger delayed animation for Home Section -->
+                <a href="#" onclick="showSection('vocab')" class="card p-6 bg-card rounded-2xl shadow-lg border-t-4 border-indigo-400 flex flex-col items-center text-center tool-card-animate delay-1">
+                    <i data-lucide="book-open-text" class="w-10 h-10 text-indigo-500 mb-3 icon-float"></i>
+                    <h3 class="text-xl font-semibold mb-2 text-default">Vocabulary Builder</h3>
+                    <p class="text-gray-500 text-sm">Expand your lexicon daily with challenging new words.</p>
+                </a>
+                <!-- Applied tool-card-animate class to trigger delayed animation for Home Section -->
+                <a href="#" onclick="showSection('pomodoro')" class="card p-6 bg-card rounded-2xl shadow-lg border-t-4 border-cyan-400 flex flex-col items-center text-center tool-card-animate delay-2">
+                    <i data-lucide="timer" class="w-10 h-10 text-cyan-500 mb-3 icon-float" style="animation-delay: 0.2s;"></i>
+                    <h3 class="text-xl font-semibold mb-2 text-default">Study Timer</h3>
+                    <p class="text-gray-500 text-sm">Master deep work cycles with structured focus sessions.</p>
+                </a>
+                <!-- Applied tool-card-animate class to trigger delayed animation for Home Section -->
+                <a href="#" onclick="showSection('notes')" class="card p-6 bg-card rounded-2xl shadow-lg border-t-4 border-amber-400 flex flex-col items-center text-center tool-card-animate delay-3">
+                    <i data-lucide="brain-circuit" class="w-10 h-10 text-amber-500 mb-3 icon-float" style="animation-delay: 0.4s;"></i>
+                    <h3 class="text-xl font-semibold mb-2 text-default">Notes Organizer (AI Enhanced)</h3>
+                    <p class="text-gray-500 text-sm">Use Gemini to instantly summarize large texts or elaborate concepts.</p>
+                </a>
+                <!-- Applied tool-card-animate class to trigger delayed animation for Home Section -->
+                <a href="#" onclick="showSection('todo')" class="card p-6 bg-card rounded-2xl shadow-lg border-t-4 border-green-400 flex flex-col items-center text-center tool-card-animate delay-4">
+                    <i data-lucide="list-checks" class="w-10 h-10 text-green-500 mb-3 icon-float" style="animation-delay: 0.6s;"></i>
+                    <h3 class="text-xl font-semibold mb-2 text-default">Real-time To-Do List</h3>
+                    <p class="text-gray-500 text-sm">Cloud-synced list for tasks and collaborative projects.</p>
+                </a>
+            </div>
+        </div>
+        
+        <!-- NEW TESTIMONIALS SECTION -->
+        <div class="mt-20 bg-gray-100 p-8 rounded-2xl shadow-xl border-t-4 border-cyan-400">
+            <h2 class="text-3xl font-bold text-default mb-10 text-center font-header">Trusted By Focused Learners Worldwide</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="p-6 rounded-xl bg-card shadow-md border-l-4 border-indigo-500">
+                    <div class="flex items-center mb-4">
+                        <img class="w-10 h-10 rounded-full object-cover mr-3" src="https://placehold.co/40x40/4f46e5/ffffff?text=SZ" alt="Sonal Zujam Profile">
+                        <div>
+                            <p class="font-bold text-default">Sonal Zujam, University Student</p>
+                            <div class="text-sm text-amber-500">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic">
+                        "The **Study Timer** linked with the to-do list helped me triple my deep-focus time. It's the only productivity tool I use that actually respects my time."
+                    </p>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="p-6 rounded-xl bg-card shadow-md border-l-4 border-green-500">
+                    <div class="flex items-center mb-4">
+                        <img class="w-10 h-10 rounded-full object-cover mr-3" src="https://placehold.co/40x40/10b981/ffffff?text=KS" alt="Ketaki Sarode Profile">
+                        <div>
+                            <p class="font-bold text-default">Ketaki Sarode, Corporate Analyst</p>
+                            <div class="text-sm text-amber-500">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic">
+                        "Real-time sync on the **Real-time To-Do List** is a game changer for managing my projects across devices. Absolutely seamless and zero data loss."
+                    </p>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="p-6 rounded-xl bg-card shadow-md border-l-4 border-amber-500">
+                    <div class="flex items-center mb-4">
+                        <img class="w-10 h-10 rounded-full object-cover mr-3" src="https://placehold.co/40x40/f59e0b/ffffff?text=OB" alt="Om Bhosale Profile">
+                        <div>
+                            <p class="font-bold text-default">Om Bhosale, Grad Researcher</p>
+                            <div class="text-sm text-amber-500">★★★★★</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic">
+                        "The **AI Notes summarizer** is incredible. I dump my lecture notes in and instantly get a concise summary without spending another hour re-reading."
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- END NEW TESTIMONIALS SECTION -->
+    </section>
+
+    <!-- ABOUT SECTION (RE-DESIGNED FOR EDITORIAL, STRIPED LOOK) --><section id="about">
+        
+        <!-- Block 1: MISSION & VISION (White background with strong separator) --><div class="max-w-5xl mx-auto text-center space-y-6 p-card border-b border-indigo-200 scroll-reveal delay-1">
+            <!-- APPLIED NEW FONT-HEADER CLASS -->
+            <h2 class="text-4xl md:text-5xl font-extrabold text-indigo-700 font-header">The Power of Focused Learning</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto">
+                At <strong>EduProductivity Hub</strong>, we recognize the inherent challenge in balancing rigorous academics with personal well-being. Our mission is to deliver a cohesive, distraction-free environment where every minute spent studying translates directly into tangible progress.
+            </p>
+            <!-- ADDED MORE MEANINGFUL TEXT -->
+            <p class="text-md text-gray-700 max-w-4xl mx-auto pt-4 border-t border-indigo-100">
+                <strong>Our Commitment:</strong> We are dedicated to continuous improvement, integrating cutting-edge AI and data persistence solutions to ensure our platform evolves with the needs of modern learners. Your success is our primary metric—we don't succeed unless you do.
+            </p>
+        </div>
+
+        <!-- Block 2: ORIGIN STORY (Gray background for contrast) --><div class="mt-0 p-10 bg-gray-50 scroll-reveal delay-2">
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <!-- APPLIED NEW FONT-HEADER CLASS -->
+                    <h3 class="text-3xl font-bold text-default mb-4 flex items-center border-b pb-2 border-amber-300 font-header">
+                        <i data-lucide="lightbulb" class="w-6 h-6 text-amber-600 mr-3"></i> Our Origin Story: Solving the Switching Cost
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        The Hub began as a simple internal tool built out of frustration with disorganized applications. Our founders noticed they were juggling five different platforms—one for notes, one for timing, another for tasks, and still others for collaborative study. <strong>This fragmented approach eroded focus and wasted valuable energy.</strong>
+                    </p>
+                    <!-- EXPANDED DETAIL -->
+                    <p class="text-gray-700 mt-4 font-semibold italic border-l-2 border-gray-400 pl-3">
+                        They realized the biggest productivity killer wasn't distraction, but the <strong>switching costs</strong> between disparate apps. This led to the creation of the Hub: a unified platform built on a single, powerful principle: <strong>Deep Work in One Place.</strong> This design minimizes cognitive load, freeing up your mental resources for actual learning and creation.
+                    </p>
+                    <p class="text-sm text-gray-600 mt-4">
+                        *Our goal is simple: to give students and professionals a 10% edge in efficiency, which often translates to hours of saved time and significantly reduced stress every single week.*
+                    </p>
+                </div>
+                <div>
+                    <!-- IMAGE REPLACED WITH PROFESSIONAL-LOOKING PLACEHOLDER -->
+                    <img class="w-full h-auto rounded-xl shadow-xl opacity-90" 
+                        src="https://plus.unsplash.com/premium_photo-1661767552224-ef72bb6b671f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1932" 
+                        alt="Stylized graphic representing a focused student at a desk." 
+                        onerror="this.onerror=null; this.src='https://placehold.co/500x300/4f46e5/c7d2fe?text=Focused+Study';"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Block 3: CORE VALUES (White background, simple text blocks) --><div class="mt-0 p-10 bg-card border-t border-indigo-200">
+            <!-- APPLIED NEW FONT-HEADER CLASS -->
+            <h3 class="text-4xl font-bold text-indigo-600 mb-12 text-center font-header scroll-reveal delay-1">Our Guiding Principles</h3>
+            <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-x-12 gap-y-8">
+                <!-- Value 1 -->
+                <div class="space-y-3 text-center md:text-left border-b md:border-b-0 md:border-r pb-4 md:pb-0 md:pr-12 border-gray-200 scroll-reveal delay-2">
+                    <i data-lucide="zap" class="w-8 h-8 text-red-500 mb-2 mx-auto md:mx-0"></i>
+                    <h4 class="text-xl font-semibold text-gray-800">Efficiency First</h4>
+                    <p class="text-gray-600 text-sm">Every feature is designed to save you time and maximize output with minimal friction. Less clicking, more learning.</p>
+                </div>
+                <!-- Value 2 -->
+                <div class="space-y-3 text-center md:text-left border-b md:border-b-0 md:border-r pb-4 md:pb-0 md:pr-12 border-gray-200 scroll-reveal delay-3">
+                    <i data-lucide="graduation-cap" class="w-8 h-8 text-purple-500 mb-2 mx-auto md:mx-0"></i>
+                    <h4 class="text-xl font-semibold text-gray-800">Universal Access</h4>
+                    <p class="text-gray-600 text-sm">A clean, intuitive interface ensures our tools are easy to use for everyone, regardless of technical skill or academic level.</p>
+                </div>
+                <!-- Value 3 -->
+                <div class="space-y-3 text-center md:text-left scroll-reveal delay-4">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-yellow-500 mb-2 mx-auto md:mx-0"></i>
+                    <h4 class="text-xl font-semibold text-gray-800">Data Reliability</h4>
+                    <p class="text-gray-600 text-sm">Your tasks and progress are persistently saved via Realtime Firestore, guaranteeing your hard work is always safe.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Block 4: TEAM AND CONTACT (Gray background, simple grid) --><div class="mt-0 p-10 bg-gray-50">
+             <h3 class="text-3xl font-bold text-default mb-10 text-center font-header scroll-reveal delay-1">Connect With Us</h3>
+             <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 text-center">
+                <!-- Element 1: Vision - Add scroll-reveal and staggered delay classes -->
+                <div class="space-y-2 p-4 border-b-2 border-indigo-300 scroll-reveal delay-2" id="connect-vision">
+                    <i data-lucide="rocket" class="w-8 h-8 text-indigo-500 mb-1"></i>
+                    <h3 class="text-xl font-semibold mb-1">Vision</h3>
+                    <p class="text-gray-600 text-sm">To be the global benchmark for student productivity and focus tools.</p>
+                </div>
+                <!-- Element 2: Team - Add scroll-reveal and staggered delay classes -->
+                <div class="space-y-2 p-4 border-b-2 border-cyan-300 scroll-reveal delay-3" id="connect-team">
+                    <i data-lucide="users" class="w-8 h-8 text-cyan-500 mb-1"></i>
+                    <h3 class="text-xl font-semibold mb-1">Team</h3>
+                    <p class="text-gray-600 text-sm">A small, passionate team of developers and educators obsessed with efficiency.</p>
+                </div >
+                <!-- Element 3: Contact - Add scroll-reveal and staggered delay classes -->
+                <div class="space-y-2 p-4 border-b-2 border-amber-300 scroll-reveal delay-4" id="connect-contact">
+                    <i data-lucide="mail" class="w-8 h-8 text-amber-500 mb-1"></i>
+                    <h3 class="text-xl font-semibold mb-1">Contact</h3>
+                    <p class="text-gray-600 text-sm">Email us at <a href="mailto:support@edupro.com" class="text-indigo-600 hover:underline font-medium">support@edupro.com</a> for help.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW: TOOLS DASHBOARD SECTION (Hub for all tools) --><section id="tools">
+        <h2 class="text-4xl font-extrabold text-default mb-10 border-b pb-4">Your Productivity Tools</h2>
+        
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- LEFT COLUMN: STREAK TRACKER (Gamification) -->
+            <div class="p-8 bg-card rounded-2xl shadow-xl space-y-6 border-t-4 border-indigo-600">
+                <i data-lucide="activity" class="w-10 h-10 text-indigo-500 mx-auto mb-2"></i>
+                <h3 class="text-2xl font-bold text-indigo-700 mb-4">Focus & Task Streaks</h3>
+                
+                <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="p-3 bg-white rounded-lg shadow-sm">
+                            <!-- NEW ID: toolsFocusStreakDisplay -->
+                            <p id="toolsFocusStreakDisplay" class="text-3xl font-extrabold text-indigo-600">0</p>
+                            <p class="text-xs text-gray-500 mt-1">Focus Streak (Days)</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg shadow-sm">
+                             <!-- NEW ID: toolsTasksTodayDisplay -->
+                            <p id="toolsTasksTodayDisplay" class="text-3xl font-extrabold text-green-600">0</p>
+                            <p class="text-xs text-gray-500 mt-1">Tasks Completed (Today)</p>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg shadow-sm">
+                             <!-- NEW ID: toolsTotalVocabAttempts -->
+                            <p id="toolsTotalVocabAttempts" class="text-3xl font-extrabold text-amber-600">0</p>
+                            <p class="text-xs text-gray-500 mt-1">Vocab Attempts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: AI PROMPTS (Intelligence) -->
+            <div class="p-8 bg-purple-50 rounded-2xl shadow-xl border-t-4 border-purple-500">
+                <h3 class="text-2xl font-bold text-purple-800 mb-4 flex items-center">
+                    <i data-lucide="brain" class="w-6 h-6 mr-3"></i> AI Study Prompts
+                </h3>
+                <p class="text-gray-700 mb-4">Choose an AI persona in the chat widget (bottom right) for tailored help:</p>
+                <ul class="space-y-2 text-left">
+                    <li class="flex items-center text-purple-700 font-medium">
+                        <i data-lucide="chevrons-right" class="w-5 h-5 mr-2"></i> Study Buddy (General Advice)
+                    </li>
+                    <li class="flex items-center text-purple-700 font-medium">
+                        <i data-lucide="chevrons-right" class="w-5 h-5 mr-2"></i> Challenging Quizzer (Test Knowledge)
+                    </li>
+                    <!-- REMOVED: simplifier option -->
+                </ul>
+                <button onclick="toggleChatbot()" class="mt-6 w-full bg-purple-600 text-white font-bold py-2.5 rounded-lg hover:bg-purple-700 transition duration-200">
+                    Open AI Assistant
+                </button>
+            </div>
+        </div>
+
+        <h3 class="text-3xl font-extrabold text-default mb-6 mt-16 border-b pb-2">Launch Individual Tools</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Tool Card 1: Pomodoro -->
+            <a href="#" onclick="showSection('pomodoro')" class="card bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center text-center border-t-4 border-cyan-500 hover:scale-[1.03] transition-transform duration-300 tool-card-animate delay-1">
+                <i data-lucide="timer" class="w-12 h-12 text-cyan-600 mb-3 icon-float"></i>
+                <h3 class="2xl font-bold mb-2">Study Timer</h3>
+                <p class="text-gray-600 text-sm">Structured focus sessions to maximize deep work.</p>
+                <span class="mt-3 text-cyan-600 font-semibold flex items-center">
+                    Launch Tool <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                </span>
+            </a>
+
+            <!-- Tool Card 2: Vocabulary -->
+            <a href="#" onclick="showSection('vocab')" class="card bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center text-center border-t-4 border-indigo-500 hover:scale-[1.03] transition-transform duration-300 tool-card-animate delay-2">
+                <i data-lucide="book-open-text" class="w-12 h-12 text-indigo-600 mb-3 icon-float"></i>
+                <h3 class="2xl font-bold mb-2">Vocab Builder</h3>
+                <p class="text-gray-600 text-sm">Generate new words and expand your working lexicon.</p>
+                <span class="mt-3 text-indigo-600 font-semibold flex items-center">
+                    Launch Tool <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                </span>
+            </a>
+
+            <!-- Tool Card 3: To-Do -->
+            <a href="#" onclick="showSection('todo')" class="card bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center text-center border-t-4 border-green-500 hover:scale-[1.03] transition-transform duration-300 tool-card-animate delay-3">
+                <i data-lucide="list-checks" class="w-12 h-12 text-green-600 mb-3"></i>
+                <h3 class="2xl font-bold mb-2">Real-time To-Do List</h3>
+                <p class="text-gray-600 text-sm">Cloud-synced list for tasks and collaborative projects.</p>
+                <span class="mt-3 text-green-600 font-semibold flex items-center">
+                    Launch Tool <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                </span>
+            </a>
+
+            <!-- Tool Card 4: Notes (AI Enhanced) -->
+            <a href="#" onclick="showSection('notes')" class="card bg-card rounded-2xl shadow-xl p-6 flex flex-col items-center text-center border-t-4 border-amber-500 hover:scale-[1.03] transition-transform duration-300 tool-card-animate delay-4">
+                <i data-lucide="brain-circuit" class="w-12 h-12 text-amber-600 mb-3"></i>
+                <h3 class="2xl font-bold mb-2">Notes Organizer (AI Enhanced)</h3>
+                <p class="text-gray-600 text-sm">Use Gemini to instantly summarize large texts or elaborate concepts.</p>
+                <span class="mt-3 text-amber-600 font-semibold flex items-center">
+                    Launch Tool <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- POMODORO SECTION (UNCHANGED) --><section id="pomodoro">
+        <h2 class="text-4xl font-extrabold text-default mb-6 border-b pb-2">Study Timer</h2>
+
+        <div class="card p-6 bg-card rounded-xl shadow-lg border-t-4 border-cyan-400 max-w-lg mx-auto pomodoro-card">
+            <div class="flex items-center space-x-2 mb-4">
+                <i data-lucide="timer" class="w-6 h-6 text-cyan-600"></i>
+                <h3 class="text-xl font-semibold">Structured Focus Sessions</h3>
+            </div>
+
+            <!-- Customization Inputs --><div class="space-y-2 mb-4">
+                <div class="flex space-x-2">
+                    <label for="focusTimeInput" class="text-xs font-medium text-gray-700 w-1/2 text-left">Focus (min)</label>
+                    <label for="breakTimeInput" class="text-xs font-medium text-gray-700 w-1/2 text-left">Break (min)</label>
+                </div>
+                <div class="flex space-x-2">
+                    <input type="number" id="focusTimeInput" value="25" min="1" max="99" 
+                        class="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 text-center font-bold">
+                    <input type="number" id="breakTimeInput" value="5" min="1" max="99" 
+                        class="w-1/2 p-2 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 text-center font-bold">
+                </div>
+            </div>
+
+            <p class="text-gray-600 mb-4">Current Mode: <span id="timerMode" class="font-semibold text-cyan-700">Focus</span></p>
+
+            <div class="text-center bg-cyan-50 p-6 rounded-lg shadow-inner">
+                <p id="timerDisplay" class="text-6xl font-extrabold text-cyan-800 tracking-wider">25:00</p>
+                <p class="text-sm text-cyan-600 mt-2">Time remaining</p>
+            </div>
+            
+            <div class="flex justify-between space-x-2 mt-4">
+                <button id="startPauseBtn" class="flex-1 bg-cyan-600 text-white font-bold py-2 rounded-lg hover:bg-cyan-700 transition duration-200 btn-shadow" onclick="toggleTimer()">
+                    Start
+                </button>
+                <button class="flex-1 bg-gray-300 text-gray-800 font-bold py-2 rounded-lg hover:bg-gray-400 transition duration-200" onclick="resetTimer()">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- VOCABULARY SECTION (UNCHANGED) --><section id="vocab">
+        <h2 class="text-4xl font-extrabold text-default mb-6 border-b pb-2">Vocabulary Builder</h2>
+
+        <div class="card p-6 bg-card rounded-xl shadow-lg border-t-4 border-indigo-400 max-w-lg mx-auto">
+            <div class="flex items-center space-x-2 mb-4">
+                <i data-lucide="book-open-text" class="w-6 h-6 text-indigo-600"></i>
+                <h3 class="text-xl font-semibold">Expand Your Lexicon</h3>
+            </div>
+            <p class="text-gray-600 mb-4">Click generate to learn a new, challenging word and its meaning:</p>
+            
+            <div id="vocab-card-content" class="bg-indigo-50 p-4 rounded-lg min-h-[100px] flex flex-col justify-center transition duration-300">
+                <p id="vocabWord" class="text-2xl font-bold text-indigo-900"></p>
+                <p id="vocabMeaning" class="text-sm text-indigo-700 italic mt-1"></p>
+            </div>
+
+            <button class="w-full mt-4 bg-indigo-600 text-white font-bold py-2.5 rounded-lg hover:bg-indigo-700 transition duration-200 btn-shadow" onclick="generateWord()">
+                Generate New Word
+            </button>
+            
+            <!-- NEW: AI Explore Button for deeper word context -->
+            <button class="w-full mt-2 bg-purple-600 text-white font-bold py-2.5 rounded-lg hover:bg-purple-700 transition duration-200 btn-shadow" onclick="explainWord()">
+                ✨ Explain AI
+            </button>
+            
+            <div id="wordInsight" class="mt-4 p-3 bg-purple-100 text-purple-800 rounded-lg hidden">
+                <h4 class="font-bold mb-1">AI Insight:</h4>
+                <div id="wordInsightContent" class="text-sm"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- REAL-TIME TO-DO LIST SECTION (UNCHANGED) --><section id="todo">
+        <h2 class="text-4xl font-extrabold text-default mb-6 border-b pb-2">Real-time To-Do List (Firestore)</h2>
+
+        <div class="card p-6 bg-card rounded-xl shadow-lg border-t-4 border-green-400 max-w-3xl mx-auto">
+            <div class="flex items-center space-x-2 mb-4">
+                <i data-lucide="list-checks" class="w-6 h-6 text-green-600"></i>
+                <h3 class="text-xl font-semibold">Track and Manage Tasks</h3>
+                <span id="auth-status-indicator" class="text-xs font-medium text-red-500 ml-auto p-1 rounded bg-red-100">Connecting...</span>
+            </div>
+            
+            <div id="addTaskForm" class="flex space-x-2 mb-4">
+                <input type="text" id="newTask" placeholder="Add a new task (e.g., Write a history paper)" class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                <button class="bg-green-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200" onclick="addTask()">
+                    Add Task
+                </button>
+            </div>
+
+            <!-- Removed: New AI Feature: Task Breakdown Button -->
+            
+            <!-- Removed: Output Area for Breakdown -->
+
+            <ul id="taskList" class="space-y-3 mt-4">
+                <li class="text-center text-gray-400 p-4 bg-gray-50 rounded-lg">Loading tasks...</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-4 text-right">Tasks saved in Firestore for cross-device sync.</p>
+        </div>
+    </section>
+
+    <!-- NOTES SECTION (AI ENHANCED!) --><section id="notes">
+        <h2 class="text-4xl font-extrabold text-default mb-6 border-b pb-2">Notes Organizer</h2>
+
+        <div class="card p-6 bg-card rounded-xl shadow-lg border-t-4 border-amber-400 max-w-4xl mx-auto">
+            <div class="flex items-center space-x-2 mb-4">
+                <i data-lucide="clipboard-pen" class="w-6 h-6 text-amber-600"></i>
+                <h3 class="text-xl font-semibold">Capture, Categorize, and Analyze Your Notes</h3>
+            </div>
+
+            <!-- Note Input Form with AI Buttons --><div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                <input type="text" id="noteTitle" placeholder="Note Title (e.g., Thermodynamics)" class="md:col-span-2 p-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
+                <select id="noteCategory" class="md:col-span-1 p-2 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
+                    <option value="General">General</option>
+                    <option value="Lecture">Lecture</option>
+                    <option value="Project">Project</option>
+                    <option value="Review">Review</option>
+                </select>
+                <button class="md:col-span-1 bg-amber-600 text-white font-bold py-2 rounded-lg hover:bg-amber-700 transition duration-200" onclick="addNote()">
+                    Save Note
+                </button>
+            </div>
+            <textarea id="noteContent" placeholder="Start typing your detailed notes here... AI buttons activate when text is present." rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500"></textarea>
+
+            <div class="flex space-x-3 mt-4 justify-end">
+                <!-- REMOVED: Summarize Note Button -->
+                <!-- REMOVED: Elaborate Button -->
+            </div>
+            
+            <!-- New AI Output Area --><div id="aiNoteOutputContainer" class="mt-6 p-4 border border-indigo-200 bg-indigo-50 rounded-xl hidden">
+                <h4 class="font-bold text-indigo-800 flex items-center mb-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 mr-2"></i> AI Insight
+                </h4>
+                <div id="aiNoteOutputContent" class="text-sm text-indigo-700 whitespace-pre-wrap"></div>
+                <div class="flex justify-end mt-3">
+                    <button class="text-xs text-indigo-600 hover:underline" onclick="copyToClipboard('aiNoteOutputContent')">Copy to Clipboard</button>
+                </div>
+            </div>
+
+            <!-- Existing Note List --><div id="noteList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                <!-- Notes will be rendered here --></div>
+            <p class="text-xs text-gray-500 mt-4 text-right">Notes currently saved in your browser (local storage).</p>
+        </div>
+    </section>
+
+    <!-- PROFILE / LOGIN SECTION (SIMPLIFIED) --><section id="profile">
+        <div id="loginPage" class="flex justify-center items-center min-h-[50vh]">
+            <div class="bg-card p-8 md:p-10 rounded-2xl shadow-2xl max-w-md w-full text-center border-t-4 border-indigo-600">
+                <i data-lucide="lock" class="w-10 h-10 text-indigo-500 mx-auto mb-4"></i>
+                <h2 class="text-3xl font-bold text-indigo-700 mb-2">Authenticated Session</h2>
+                <p class="mb-6 text-gray-500 text-sm">You are logged in anonymously using Firebase. Your User ID below links to your real-time tasks.</p>
+                
+                <p id="current-user-id" class="mt-4 text-sm text-gray-500 p-2 bg-gray-100 rounded-lg break-words">
+                    User ID: <span id="userIdDisplay">Loading...</span>
+                </p>
+                <p class="mt-2 text-xs text-red-500">
+                    Note: Share this ID with another person to collaborate in real-time on your To-Do List!
+                </p>
+                <!-- Removed email/password inputs as we use anonymous auth --></div>
+        </div>
+    </section>
+
+    <!-- CHATBOT WIDGET (UNCHANGED) --><div id="chatbot-container" class="fixed bottom-4 right-4 z-50">
+        <!-- Chat Interface --><div id="chat-window" class="hidden w-80 h-96 bg-card rounded-xl shadow-2xl flex-col border border-gray-200 overflow-hidden mb-2">
+            <div class="bg-indigo-600 text-white p-3 flex justify-between items-center shadow-md">
+                <h3 class="font-bold">Edu AI Assistant</h3>
+                <button onclick="toggleChatbot()" class="text-white hover:text-indigo-200 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <!-- AI Mode Selector --><div class="p-3 bg-indigo-50 border-b border-indigo-200">
+                <label for="ai-mode-select" class="text-xs font-semibold text-indigo-700 block mb-1">AI Mode:</label>
+                <select id="ai-mode-select" class="w-full p-1.5 text-sm rounded-lg border border-indigo-300 bg-white text-gray-800 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="study_buddy">Study Buddy (General Advice)</option>
+                    <option value="quizzer">Challenging Quizzer (Test Yourself)</option>
+                    <!-- REMOVED: simplifier option -->
+                </select>
+            </div>
+            <div id="chat-messages" class="flex-grow p-3 overflow-y-auto space-y-3">
+                <div class="text-center text-sm text-gray-500 mt-10">
+                    Ask me anything about productivity or learning!
+                </div>
+            </div>
+            <div class="p-3 border-t flex space-x-2">
+                <input
+                    type="text"
+                    id="chat-input"
+                    placeholder="Ask a question..."
+                    class="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    onkeydown="if(event.key === 'Enter') handleChatSend()"
+                />
+                <button
+                    id="chat-send-btn"
+                    onclick="handleChatSend()"
+                    class="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition duration-300 flex items-center justify-center"
+                >
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Toggle Button --><button
+            onclick="toggleChatbot()"
+            class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 text-xl btn-shadow"
+            id="chatbot-toggle-btn"
+        >
+            <i data-lucide="message-square" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- FOOTER: REDESIGNED WITH TWO COLUMNS AND GRAY BACKGROUND --><footer class="bg-slate-800 pt-10 pb-6 text-gray-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                
+                <!-- Column 1: Logo & Mission -->
+                <div class="col-span-2 md:col-span-1 space-y-3">
+                    <a href="#" onclick="showSection('home')" class="text-xl font-extrabold text-indigo-400 logo-link flex items-center">
+                        <i data-lucide="graduation-cap" class="w-6 h-6 mr-2"></i> EduProductivity Hub
+                    </a>
+                    <p class="text-sm text-gray-400">
+                        The unified platform for deep work and academic success, powered by real-time sync and AI assistance.
+                    </p>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="showSection('home')" class="hover:text-indigo-400 transition text-gray-400">Home</a></li>
+                        <li><a href="#" onclick="showSection('about')" class="hover:text-indigo-400 transition text-gray-400">About Us</a></li>
+                        <li><a href="#" onclick="showSection('tools')" class="hover:text-indigo-400 transition text-gray-400">Tools Dashboard</a></li>
+                        <li><a href="#" onclick="showSection('profile')" class="hover:text-indigo-400 transition text-gray-400">Profile</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Legal & Compliance -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Support & Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="toggleChatbot()" class="hover:text-indigo-400 transition text-gray-400">Help Center / AI Chat</a></li>
+                        <li><a href="mailto:support@edupro.com" class="hover:text-indigo-400 transition text-gray-400">Contact Support</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition text-gray-400">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-indigo-400 transition text-gray-400">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Technology - REMOVED -->
+                
+            </div>
+
+            <!-- Copyright Line -->
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-xs text-gray-500">
+                © 2025 EduProductivity Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- FIREBASE AND MAIN JAVASCRIPT LOGIC --><script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // setLogLevel('Debug'); // Uncomment to debug Firebase issues
+
+        // --- GLOBAL FIREBASE/APP VARIABLES (Mandatory) ---
+        // These fallbacks allow the code to run without errors in VS Code/local environments
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Check if Firebase config is actually provided before initializing
+        const isFirebaseAvailable = !!firebaseConfig.apiKey; 
+
+        let app, auth, db;
+        let currentUserId = null;
+        let unsubscribeTasks = null; // Listener for real-time updates
+        
+        if (isFirebaseAvailable) {
+            // Initialize Firebase services only if config is present
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        }
+
+        // --- THEME TOGGLE LOGIC ---
+        window.toggleTheme = function() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const iconElement = document.getElementById('theme-icon');
+            if (iconElement) {
+                iconElement.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+                lucide.createIcons(); // Re-render icon
+            }
+        }
+        
+        // Apply saved theme on load
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+
+        // --- FIREBASE HELPER FUNCTIONS ---
+        // Determines the collection path for private data (To-Do List)
+        function getTaskCollectionRef(dbInstance, userId) {
+            return collection(dbInstance, `artifacts/${appId}/users/${userId}/tasks`);
+        }
+        
+        // Function to handle initial authentication (run once on load)
+        async function authenticateUser() {
+            const statusIndicator = document.getElementById('auth-status-indicator');
+            const userIdDisplay = document.getElementById('userIdDisplay');
+            
+            if (!isFirebaseAvailable) {
+                 // Simulate authentication for local environments
+                 if (statusIndicator) {
+                     statusIndicator.textContent = 'LOCAL: Disabled';
+                     statusIndicator.classList.remove('text-red-500', 'bg-red-100');
+                     statusIndicator.classList.add('text-yellow-500', 'bg-yellow-100');
+                 }
+                 if (userIdDisplay) {
+                     userIdDisplay.textContent = 'Local Mode - No Auth ID';
+                 }
+                 return;
+            }
+            
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    // Fallback to anonymous sign-in if running in a Canvas environment
+                    // where __initial_auth_token is not provided, or locally where Firebase is configured
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Firebase Auth Error:", error);
+                notify(`Authentication failed: ${error.message}`, 'error');
+            }
+        }
+
+        // --- 1. UTILITY FUNCTIONS ---
+
+        // Custom Notification (Replacing alert())
+        function notify(message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            
+            let color = 'bg-green-500';
+            let icon = 'check-circle';
+            if (type === 'error') {
+                color = 'bg-red-500';
+                icon = 'x-circle';
+            } else if (type === 'info') {
+                color = 'bg-blue-500';
+                icon = 'info';
+            }
+
+            notification.className = `${color} text-white px-4 py-3 rounded-xl shadow-xl flex items-center space-x-3 w-72 transform translate-x-full transition-all duration-300`;
+            notification.innerHTML = `
+                <i data-lucide="${icon}" class="w-5 h-5"></i>
+                <span class="text-sm flex-grow">${message}</span>
+                <button onclick="this.parentNode.remove()" class="opacity-70 hover:opacity-100">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            `;
+
+            container.appendChild(notification);
+            lucide.createIcons(); // Initialize new icon
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10); 
+
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(10px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadNotes(); // Notes still use localStorage
+
+            // Load stats before updating auth UI
+            const storedStats = localStorage.getItem('eduProStats');
+            if (storedStats) {
+                stats = JSON.parse(storedStats);
+                checkAndResetDailyStats();
+            }
+
+            // Start Firebase Authentication Process
+            authenticateUser();
+
+            // Initialize timer display
+            window.resetTimer();
+            const focusInput = document.getElementById('focusTimeInput');
+            const breakInput = document.getElementById('breakTimeInput');
+            
+            if (focusInput && breakInput) {
+                [focusInput, breakInput].forEach(input => {
+                    input.addEventListener('change', () => {
+                        if (!isRunning && input.value > 0) {
+                            window.resetTimer(); 
+                        }
+                    });
+                });
+            }
+            updateTimerDisplay();
+            window.generateWord(); // Initial vocab word
+
+            // Setup change listener for Notes AI buttons
+            const noteContentInput = document.getElementById('noteContent');
+            if (noteContentInput) {
+                noteContentInput.addEventListener('input', updateNoteAIButtonState);
+                // Also call once initially
+                updateNoteAIButtonState();
+            }
+            
+            // Setup scroll reveal animation observers
+            setupScrollReveal(); 
+        });
+        
+        // --- 2. NAVIGATION AND UI STATE ---
+
+        // Exposing functions to global scope for HTML onclick attributes
+        window.showSection = function(targetId) {
+            document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Ensure stats are updated whenever a page is shown
+            updateProgressUI();
+        }
+
+        document.querySelectorAll('.nav-links a, .cta-button').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = a.dataset.target;
+                if (target) window.showSection(target);
+            });
+        });
+        
+        // This function is no longer needed as mobile nav toggle button was removed
+        window.toggleMobileMenu = function() {
+            // function intentionally removed for cleanup after UI change.
+        }
+
+        // --- 3. CHATBOT LOGIC (UPDATED) ---
+
+        async function exponentialBackoffFetch(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (response.status === 429 && retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return exponentialBackoffFetch(url, options, retries - 1, delay * 2);
+                }
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API call failed with status ${response.status}: ${errorText}`);
+                }
+                return response;
+            } catch (error) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return exponentialBackoffFetch(url, options, retries - 1, delay * 2);
+                }
+                throw error;
+            }
+        }
+        
+        // New function to handle the core Gemini API call
+        async function callGeminiApi(prompt, systemInstructionText, tools = []) {
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: {
+                    parts: [{ text: systemInstructionText }]
+                },
+                tools: tools.length > 0 ? tools : undefined
+            };
+
+            const response = await exponentialBackoffFetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            return result.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
+        }
+
+        const chatWindow = document.getElementById('chat-window');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        let chatHistory = [];
+
+        const aiPersonas = {
+            study_buddy: "You are a helpful and concise productivity assistant named Edu AI. You help students with study tips, organization, and focus techniques. Keep answers brief and encouraging.",
+            quizzer: "You are a challenging quizmaster. When the user gives you a topic, create one hard, multiple-choice question on that topic. Do not give the answer immediately, just the question and options.",
+        };
+
+        // --- CUSTOM LOCAL ANSWERS FOR DEMO ---
+        const botAnswers = {
+            'study_buddy': {
+                'how to study effectively': "To study effectively, focus on **Active Recall** (testing yourself) rather than passive rereading, and use **Spaced Repetition** (reviewing material over increasing intervals). Also, ensure your workspace is tidy to minimize distractions!",
+                'what is the pomodoro technique': "The **Pomodoro Technique** is a time management method where you work intensely for 25 minutes (one Pomodoro) followed by a short 5-minute break. After four Pomodoros, take a longer break (20-30 minutes).",
+                'how can i focus better': "Try using the **Study Timer** in the app! Break your large study sessions into 25-minute sprints. Eliminate phone notifications, use ambient noise, and clearly define one goal for each focus sprint.",
+                // NEW THERMODYNAMICS ANSWERS
+                'explain the first law of thermodynamics': "The **First Law of Thermodynamics** is the principle of conservation of energy applied to thermodynamic systems. It states that the change in the internal energy of a system ($\Delta U$) is equal to the heat added to the system ($Q$) minus the work done by the system ($W$). ($\Delta U = Q - W$).",
+                'what is entropy': "**Entropy** ($\Delta S$) is a measure of the disorder or randomness within a closed system. The **Second Law of Thermodynamics** states that the total entropy of an isolated system can only increase over time, driving processes toward greater disorder.",
+            },
+            'quizzer': {
+                'challenging physics question': "Which of the following describes the quantum mechanical phenomenon where particles can pass through a potential energy barrier higher than their total energy?\n\nA. Photoelectric Effect\nB. Heisenberg Uncertainty Principle\nC. **Quantum Tunneling**\nD. Pauli Exclusion Principle",
+                'what is the mitochondria': "The mitochondrion is an organelle found in most eukaryotic cells. What process is primarily associated with the inner membrane of the mitochondrion?\n\nA. Photosynthesis\nB. DNA replication\nC. **Oxidative Phosphorylation**\nD. Protein Synthesis",
+                // NEW THERMODYNAMICS QUIZ QUESTIONS
+                'what is the zeroth law': "What thermodynamic law dictates that if two thermodynamic systems are each in thermal equilibrium with a third system, then they are in thermal equilibrium with each other?\n\nA. First Law\nB. Second Law\nC. **Zeroth Law**\nD. Third Law",
+                'heat engine efficiency': "The theoretical maximum efficiency of a heat engine operating between two temperatures is described by which cycle?\n\nA. Diesel Cycle\nB. Rankine Cycle\nC. Brayton Cycle\nD. **Carnot Cycle**",
+            }
+        };
+        // --- END CUSTOM LOCAL ANSWERS ---
+
+
+        window.toggleChatbot = function() {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.classList.toggle('hidden');
+            if (!chatWindow.classList.contains('hidden')) {
+                lucide.createIcons();
+            }
+        }
+
+        function displayMessage(text, sender) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `max-w-[80%] p-3 rounded-xl text-sm shadow-md transition duration-300 ${
+                sender === 'user'
+                    ? 'bg-indigo-500 text-white rounded-br-none'
+                    : 'bg-gray-200 text-gray-800 rounded-tl-none'
+            }`;
+            
+            let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedText = formattedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            messageBubble.innerHTML = formattedText;
+            messageContainer.appendChild(messageBubble);
+            chatMessages.appendChild(messageContainer);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        window.handleChatSend = async function() {
+            const userQuery = chatInput.value.trim();
+            if (!userQuery) return;
+
+            const mode = document.getElementById('ai-mode-select').value;
+
+            displayMessage(userQuery, 'user');
+            chatInput.value = '';
+            chatInput.disabled = true;
+            chatSendBtn.disabled = true;
+
+            // Show loading indicator
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'flex justify-start';
+            loadingMessage.innerHTML = '<div class="bg-gray-200 text-gray-700 p-3 rounded-xl rounded-tl-none text-sm animate-pulse">Assistant is thinking...</div>';
+            chatMessages.appendChild(loadingMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Normalize query for dictionary lookup
+            const normalizedQuery = userQuery.toLowerCase().trim();
+
+            // --- LOCAL MODE FALLBACK (with static answers) ---
+            if (!isFirebaseAvailable) {
+                let localResponse = "Sorry, my full AI brain is offline in this local prototype. Try asking 'What is the Pomodoro Technique?' or 'How can I focus better'!";
+                
+                const answers = botAnswers[mode];
+                if (answers) {
+                    const foundAnswer = Object.keys(answers).find(key => normalizedQuery.includes(key));
+                    if (foundAnswer) {
+                        localResponse = answers[foundAnswer];
+                    }
+                }
+                
+                // Wait briefly to simulate "thinking"
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Remove loading indicator
+                if (loadingMessage.parentNode) loadingMessage.remove();
+
+                displayMessage(localResponse, 'bot');
+                
+                // *** FIX SCROLL ISSUE HERE ***
+                chatMessages.scrollTop = 0; // Explicitly set scroll to top after response
+                // ****************************
+                
+                chatInput.disabled = false;
+                chatSendBtn.disabled = false;
+                chatInput.focus();
+                return;
+            }
+            // --- END LOCAL MODE FALLBACK ---
+
+
+            // --- ONLINE MODE LOGIC (Requires live server/deployment for API) ---
+            chatHistory.push({ role: "user", parts: [{ text: userQuery }] });
+            
+            const systemInstructionText = aiPersonas[mode] || aiPersonas.study_buddy; 
+
+            try {
+                const generatedText = await callGeminiApi(userQuery, systemInstructionText);
+                
+                chatHistory.push({ role: "model", parts: [{ text: generatedText }] });
+
+                // Remove loading indicator
+                if (loadingMessage.parentNode) loadingMessage.remove();
+                
+                displayMessage(generatedText, 'bot');
+                // *** FIX SCROLL ISSUE HERE ***
+                chatMessages.scrollTop = 0; // Explicitly set scroll to top after response
+                // ****************************
+
+            } catch (error) {
+                console.error('Gemini API Error:', error);
+                if (loadingMessage.parentNode) loadingMessage.remove();
+                displayMessage("Error: Could not connect to the AI assistant. (Check Network)", 'bot');
+            } finally {
+                chatInput.disabled = false;
+                chatSendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
+        
+        // --- 4. AUTHENTICATION & UI STATUS (UPDATED FOR FIREBASE) ---
+
+        // Listen for Auth state changes
+        if (isFirebaseAvailable) {
+            onAuthStateChanged(auth, (user) => {
+                const statusIndicator = document.getElementById('auth-status-indicator');
+                const userIdDisplay = document.getElementById('userIdDisplay');
+                
+                if (user) {
+                    currentUserId = user.uid;
+                    if (statusIndicator) {
+                        statusIndicator.textContent = 'Connected (User ID shown below)';
+                        statusIndicator.classList.remove('text-red-500', 'bg-red-100');
+                        statusIndicator.classList.add('text-green-600', 'bg-green-100');
+                    }
+                    if (userIdDisplay) {
+                        userIdDisplay.textContent = currentUserId;
+                    }
+                    
+                    // Initialize To-Do List Real-time Listener ONLY after auth is confirmed
+                    if (currentUserId && unsubscribeTasks === null) {
+                        setupRealtimeTaskListener();
+                        notify(`User authenticated. To-Do List is now Real-time! ID: ${currentUserId}`, 'success');
+                    }
+                    updateProgressUI(); // Ensure stats are loaded and displayed right after auth
+                } else {
+                    currentUserId = null;
+                    if (statusIndicator) {
+                        statusIndicator.textContent = 'Disconnected';
+                        statusIndicator.classList.remove('text-green-600', 'bg-green-100');
+                        statusIndicator.classList.add('text-red-500', 'bg-red-100');
+                    }
+                    if (userIdDisplay) {
+                        userIdDisplay.textContent = 'Sign-in required';
+                    }
+                }
+            });
+        }
+        
+
+        // The old login functions are now redundant as we sign in anonymously on load,
+        // but for future use, we'll keep placeholders
+        window.handleLogin = function() {
+            // In a real app, this would trigger email/password login or a popup.
+            // For now, we rely on anonymous sign-in from onAuthStateChanged.
+            notify("You are already signed in anonymously. Your session is active.", 'info');
+            window.showSection('profile');
+        }
+
+        window.handleLogout = function() {
+            // For hackathon simplicity, we won't implement full logout as anonymous is sufficient.
+            notify("Cannot logout anonymous user. Your session ID remains active.", 'error');
+        }
+
+        // --- 5. PROGRESS TRACKER & STATS LOGIC (UPDATED FOR DUPLICATE UI) ---
+
+        let stats = {
+            focusStreak: 0,
+            tasksCompletedToday: 0,
+            totalVocabAttempts: 0,
+            lastFocusDate: null,
+            lastTaskResetDate: null
+        };
+
+        function saveStats() {
+            localStorage.setItem('eduProStats', JSON.stringify(stats));
+        }
+        
+        function isSameDay(date1, date2) {
+            if (!date1 || !date2) return false;
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            return d1.getFullYear() === d2.getFullYear() &&
+                   d1.getMonth() === d2.getMonth() &&
+                   d1.getDate() === d2.getDate();
+        }
+
+        function checkAndResetDailyStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (stats.lastTaskResetDate !== today) {
+                stats.tasksCompletedToday = 0;
+                stats.lastTaskResetDate = today;
+            }
+
+            const lastFocusDate = stats.lastFocusDate ? new Date(lastFocusDate) : null;
+            if (lastFocusDate) {
+                 const yesterday = new Date();
+                 yesterday.setDate(yesterday.getDate() - 1);
+                 
+                 if (!isSameDay(today, lastFocusDate) && !isSameDay(yesterday, lastFocusDate)) {
+                     stats.focusStreak = 0;
+                 }
+            }
+
+            saveStats();
+        }
+
+        function updateProgressUI() {
+            // Update Home page tracker
+            if (document.getElementById('focusStreakDisplay')) { 
+                document.getElementById('focusStreakDisplay').textContent = stats.focusStreak;
+                document.getElementById('tasksTodayDisplay').textContent = stats.tasksCompletedToday;
+                document.getElementById('totalVocabAttempts').textContent = stats.totalVocabAttempts;
+            }
+            
+            // NEW: Update Tools page tracker
+            if (document.getElementById('toolsFocusStreakDisplay')) { 
+                document.getElementById('toolsFocusStreakDisplay').textContent = stats.focusStreak;
+                document.getElementById('toolsTasksTodayDisplay').textContent = stats.tasksCompletedToday;
+                document.getElementById('toolsTotalVocabAttempts').textContent = stats.totalVocabAttempts;
+            }
+
+            lucide.createIcons();
+        }
+        
+        // --- 10. SCROLL REVEAL ANIMATION ---
+        function setupScrollReveal() {
+            // Use Intersection Observer to trigger CSS animations on scroll
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            });
+
+            // Target all elements marked for scroll reveal
+            document.querySelectorAll('.scroll-reveal').forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+
+        // --- 6. VOCABULARY BUILDER (UNCHANGED) ---
+
+        const vocabList = [
+            { word: "Mellifluous", meaning: "Sweet or musical; pleasant to hear." },
+            { word: "Ubiquitous", meaning: "Present, appearing, or found everywhere." },
+            { word: "Ephemeral", meaning: "Lasting for a very short time." },
+            { word: "Serendipity", meaning: "The occurrence and development of events by chance in a happy or beneficial way." },
+            { word: "Quixotic", meaning: "Exceedingly idealistic; unrealistic and impractical." },
+            { word: "Luminosity", meaning: "The quality or state of being luminous; brightness." },
+            { word: "Inure", meaning: "Accustom someone to something, especially something unpleasant." },
+            { word: "Recalcitrant", meaning: "Having an obstinately uncooperative attitude toward authority or discipline." },
+            { word: "Cacophony", meaning: "A harsh, discordant mixture of sounds." },
+            { word: "Pernicious", meaning: "Having a harmful effect, especially in a gradual or subtle way." },
+            { word: "Ineffable", meaning: "Too great or extreme to be expressed or described in words." },
+            { word: "Penultimate", meaning: "Second to last in a series of things." },
+            { word: "Ebullient", meaning: "Cheerful and full of energy." },
+            { word: "Voracious", meaning: "Having an eager approach to an activity; or devouring great quantities of food." },
+            { word: "Juxtaposition", meaning: "The fact of two things being seen or placed close together with contrasting effect." },
+        ];
+
+        window.generateWord = function() {
+            const index = Math.floor(Math.random() * vocabList.length);
+            const wordData = vocabList[index];
+            
+            const vocabWordElement = document.getElementById('vocabWord');
+            const vocabMeaningElement = document.getElementById('vocabMeaning');
+            const vocabCardContentElement = document.getElementById('vocab-card-content');
+
+            if (vocabWordElement && vocabMeaningElement) {
+                vocabWordElement.textContent = wordData.word;
+                vocabMeaningElement.textContent = wordData.meaning;
+            }
+            if (vocabCardContentElement) {
+                 vocabCardContentElement.classList.add('animate-pulse');
+                setTimeout(() => {
+                    vocabCardContentElement.classList.remove('animate-pulse');
+                }, 500);
+            }
+
+            stats.totalVocabAttempts += 1;
+            saveStats();
+            updateProgressUI();
+        }
+
+        // --- 7. POMODORO TIMER (UPDATED WITH ANIMATION) ---
+        
+        let timerInterval;
+        let isRunning = false;
+        let currentMode = 'Focus';
+        let totalSeconds = 0; 
+
+        function getFocusTimeSeconds() {
+            const minutes = parseInt(document.getElementById('focusTimeInput')?.value || 25);
+            return (minutes > 0 ? minutes : 25) * 60;
+        }
+        function getBreakTimeSeconds() {
+            const minutes = parseInt(document.getElementById('breakTimeInput')?.value || 5);
+            return (minutes > 0 ? minutes : 5) * 60;
+        }
+
+        window.updateTimerDisplay = function() {
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = totalSeconds % 60;
+            if (document.getElementById('timerDisplay')) {
+                 document.getElementById('timerDisplay').textContent = 
+                     `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            if (document.getElementById('timerMode')) {
+                 document.getElementById('timerMode').textContent = currentMode;
+            }
+        }
+
+        window.toggleTimer = function() {
+            const btn = document.getElementById('startPauseBtn');
+            if (!btn) return notify('Pomodoro Timer not visible.', 'error');
+            
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                btn.textContent = 'Resume';
+            } else {
+                if (totalSeconds <= 0) {
+                    window.resetTimer();
+                }
+                isRunning = true;
+                btn.textContent = 'Pause';
+                timerInterval = setInterval(decrementTimer, 1000);
+            }
+        }
+
+        function decrementTimer() {
+            const pomodoroCard = document.querySelector('.pomodoro-card');
+
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                
+                if (currentMode === 'Focus') {
+                    currentMode = 'Break';
+                    totalSeconds = getBreakTimeSeconds();
+                    notify("Focus time complete! Take a break.", 'info');
+                    
+                    // Trigger break pulse animation
+                    if (pomodoroCard) {
+                        pomodoroCard.classList.add('pulse-break');
+                        setTimeout(() => pomodoroCard.classList.remove('pulse-break'), 600);
+                    }
+                    
+                    const today = new Date();
+                    const todayStr = today.toISOString().split('T')[0];
+                    const lastFocusDate = stats.lastFocusDate;
+                    
+                    if (!isSameDay(todayStr, lastFocusDate)) {
+                         const lastDate = lastFocusDate ? new Date(lastFocusDate) : null;
+                         const yesterday = new Date(today);
+                         yesterday.setDate(today.getDate() - 1);
+
+                        if (!lastDate || isSameDay(yesterday, lastDate)) {
+                             stats.focusStreak += 1; 
+                        } else {
+                             stats.focusStreak = 1; 
+                        }
+                    }
+                    stats.lastFocusDate = todayStr;
+                    saveStats();
+                    updateProgressUI();
+
+                } else {
+                    currentMode = 'Focus';
+                    totalSeconds = getFocusTimeSeconds();
+                    notify("Break complete! Starting next focus session.", 'success');
+                    
+                    // Trigger focus pulse animation
+                    if (pomodoroCard) {
+                        pomodoroCard.classList.add('pulse-focus');
+                        setTimeout(() => pomodoroCard.classList.remove('pulse-focus'), 600);
+                    }
+                }
+                
+                window.toggleTimer(); 
+            } else {
+                totalSeconds--;
+            }
+            updateTimerDisplay();
+        }
+
+        window.resetTimer = function() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            currentMode = 'Focus';
+            totalSeconds = getFocusTimeSeconds();
+            if (document.getElementById('startPauseBtn')) {
+                document.getElementById('startPauseBtn').textContent = 'Start';
+            }
+            updateTimerDisplay();
+            notify('Timer reset.', 'info');
+        }
+
+        // --- 8. REAL-TIME TO-DO LIST (FIREBASE MIGRATION) ---
+        
+        let allTasks = []; // Global array to hold tasks from Firestore
+
+        // --- LOCAL STORAGE FALLBACK FUNCTIONS ---
+        function loadLocalTasks() {
+            try {
+                const storedTasks = localStorage.getItem('localTasks');
+                if (storedTasks) {
+                    // Tasks stored in local storage don't have Firestore Timestamps, so we simulate them
+                    allTasks = JSON.parse(storedTasks).map(task => ({
+                        ...task,
+                        createdAt: task.createdAt ? new Date(task.createdAt) : new Date(0) // Ensure date object for local sorting
+                    }));
+                } else {
+                    allTasks = [];
+                }
+                // Sort locally (newest first, completed last)
+                allTasks.sort((a, b) => {
+                    if (a.completed !== b.completed) {
+                        return a.completed ? 1 : -1;
+                    }
+                    return b.createdAt.getTime() - a.createdAt.getTime();
+                });
+
+                renderTasks();
+            } catch (e) {
+                console.error("Error loading local tasks:", e);
+                allTasks = [];
+            }
+        }
+
+        function saveLocalTasks() {
+            try {
+                // Store only essential data
+                const serializableTasks = allTasks.map(task => ({
+                    id: task.id,
+                    text: task.text,
+                    completed: task.completed,
+                    createdAt: task.createdAt.toISOString()
+                }));
+                localStorage.setItem('localTasks', JSON.stringify(serializableTasks));
+            } catch (e) {
+                console.error("Error saving local tasks:", e);
+                notify('Warning: Could not save tasks to local storage.', 'error');
+            }
+        }
+        // --- END LOCAL STORAGE FALLBACK FUNCTIONS ---
+
+
+        function setupRealtimeTaskListener() {
+            if (!currentUserId || !isFirebaseAvailable) {
+                 const list = document.getElementById('taskList');
+                 if (list) {
+                     list.innerHTML = `<li class="text-center text-yellow-500 p-4 bg-yellow-100 rounded-lg">Real-time features are disabled in local/unconfigured mode.</li>`;
+                 }
+                 loadLocalTasks(); // Load local storage tasks instead
+                 return; // Exit if Firebase is unavailable
+            }
+
+            if (unsubscribeTasks) {
+                unsubscribeTasks(); 
+                unsubscribeTasks = null;
+            }
+
+            const tasksQuery = query(getTaskCollectionRef(db, currentUserId));
+
+            // Set up the real-time listener (onSnapshot)
+            unsubscribeTasks = onSnapshot(tasksQuery, (snapshot) => {
+                allTasks = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                // Sort tasks by creation time (newest first, completed at the end)
+                allTasks.sort((a, b) => {
+                    if (a.completed !== b.completed) {
+                        return a.completed ? 1 : -1;
+                    }
+                    // Note: Firestore Timestamp objects must be converted to milliseconds for sorting.
+                    const timeA = a.createdAt?.toMillis() || 0;
+                    const timeB = b.createdAt?.toMillis() || 0;
+                    return timeB - timeA; 
+                });
+                renderTasks();
+            }, (error) => {
+                console.error("Firestore Task Listener Error:", error);
+                notify("Failed to load real-time tasks. Check console.", 'error');
+            });
+            
+            // Clean up when the user navigates away (optional but good practice)
+            window.addEventListener('beforeunload', () => {
+                if (unsubscribeTasks) unsubscribeTasks();
+            });
+        }
+        
+        // This is called by onSnapshot and when navigating to the page.
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            if (!list) return;
+
+            // Display fallback message if Firebase is not available
+            if (!isFirebaseAvailable && list.innerHTML.includes("Real-time features are disabled")) {
+                // If in local mode, render the tasks loaded from local storage
+                if (allTasks.length === 0) {
+                     list.innerHTML = `<li class="text-center text-gray-400 p-4 bg-gray-50 rounded-lg">No tasks yet! Add one above. (Local Mode)</li>`;
+                     return;
+                }
+                
+                list.innerHTML = allTasks.map(task => {
+                    return `<li class="flex items-center justify-between p-3 rounded-xl shadow-sm transition duration-300 ${
+                        task.completed ? 'bg-green-100/70 border-l-4 border-green-500' : 'bg-gray-100 border-l-4 border-indigo-200'
+                    }">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} 
+                                onchange="toggleTaskCompletion('${task.id}')"
+                                class="form-checkbox h-5 w-5 text-green-600 rounded border-gray-300 focus:ring-green-500 cursor-pointer">
+                            <span class="text-gray-800 ${task.completed ? 'line-through text-gray-500' : 'font-medium'}">
+                                ${task.text} (Local)
+                            </span>
+                        </div>
+                        <button onclick="deleteTask('${task.id}')" class="text-red-500 hover:text-red-700 transition duration-150 p-1 rounded hover:bg-red-100">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </li>`;
+                }).join('');
+                
+            } else if (allTasks.length === 0) {
+                list.innerHTML = `<li class="text-center text-gray-400 p-4 bg-gray-50 rounded-lg">No tasks yet! Add one above.</li>`;
+                
+            } else {
+                 // Render Firebase tasks
+                 list.innerHTML = '';
+                 allTasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = `flex items-center justify-between p-3 rounded-xl shadow-sm transition duration-300 ${
+                        task.completed ? 'bg-green-100/70 border-l-4 border-green-500' : 'bg-gray-100 border-l-4 border-indigo-200'
+                    }`;
+                    li.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''} 
+                                onchange="toggleTaskCompletion('${task.id}')"
+                                class="form-checkbox h-5 w-5 text-green-600 rounded border-gray-300 focus:ring-green-500 cursor-pointer">
+                            <span class="text-gray-800 ${task.completed ? 'line-through text-gray-500' : 'font-medium'}">
+                                ${task.text}
+                            </span>
+                        </div>
+                        <button onclick="deleteTask('${task.id}')" class="text-red-500 hover:text-red-700 transition duration-150 p-1 rounded hover:bg-red-100">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    `;
+                    list.appendChild(li);
+                });
+            }
+
+            lucide.createIcons();
+        }
+
+        window.addTask = async function() {
+            const input = document.getElementById('newTask');
+            const text = input.value.trim();
+            if (!text) return notify('Task cannot be empty.', 'error');
+
+            if (!currentUserId || !isFirebaseAvailable) {
+                 // LOCAL STORAGE FALLBACK
+                 const newTask = {
+                     id: crypto.randomUUID(), // Generate a unique ID for local tracking
+                     text: text,
+                     completed: false,
+                     createdAt: new Date(),
+                 };
+                 allTasks.unshift(newTask);
+                 saveLocalTasks();
+                 renderTasks();
+                 input.value = '';
+                 return notify('Task added successfully (Local Storage).', 'success');
+            }
+
+            try {
+                // FIREBASE LOGIC
+                await addDoc(getTaskCollectionRef(db, currentUserId), {
+                    text: text,
+                    completed: false,
+                    createdAt: serverTimestamp() // Use Firestore's server timestamp
+                });
+                
+                input.value = '';
+                notify('Task added successfully (Real-time).', 'success');
+
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                notify('Error adding task to database.', 'error');
+            }
+        }
+
+        window.toggleTaskCompletion = async function(id) {
+            const taskIndex = allTasks.findIndex(t => t.id === id);
+            if (taskIndex === -1) return notify('Task not found.', 'error');
+
+            const newCompletedState = !allTasks[taskIndex].completed;
+            
+            if (!currentUserId || !isFirebaseAvailable) {
+                 // LOCAL STORAGE FALLBACK
+                 allTasks[taskIndex].completed = newCompletedState;
+                 allTasks[taskIndex].createdAt = new Date(); // Update time for re-sorting
+                 saveLocalTasks();
+                 renderTasks();
+                 
+                 // --- Stats Update (Still local for hackathon simplicity) ---
+                 if (newCompletedState) {
+                     stats.tasksCompletedToday += 1;
+                 } else if (stats.tasksCompletedToday > 0) {
+                     stats.tasksCompletedToday -= 1;
+                 }
+                 checkAndResetDailyStats(); 
+                 updateProgressUI();
+                 // --- End Stats Update ---
+
+                 return notify(newCompletedState ? 'Task marked complete (Local)!' : 'Task reopened (Local).', 'info');
+            }
+
+            try {
+                // FIREBASE LOGIC
+                await updateDoc(doc(db, getTaskCollectionRef(db, currentUserId).path, id), {
+                    completed: newCompletedState
+                });
+                
+                // --- Stats Update (Still local for hackathon simplicity) ---
+                if (newCompletedState) {
+                    stats.tasksCompletedToday += 1;
+                } else if (stats.tasksCompletedToday > 0) {
+                    stats.tasksCompletedToday -= 1;
+                }
+                checkAndResetDailyStats(); 
+                updateProgressUI();
+                // --- End Stats Update ---
+
+                notify(newCompletedState ? 'Task marked complete!' : 'Task reopened.', 'info');
+            } catch (e) {
+                console.error("Error updating document: ", e);
+                notify('Error updating task status.', 'error');
+            }
+        }
+
+        window.deleteTask = async function(id) {
+            if (!currentUserId || !isFirebaseAvailable) {
+                 // LOCAL STORAGE FALLBACK
+                 allTasks = allTasks.filter(t => t.id !== id);
+                 saveLocalTasks();
+                 renderTasks();
+                 return notify('Task deleted (Local Storage).', 'error');
+            }
+            
+            try {
+                // FIREBASE LOGIC
+                await deleteDoc(doc(db, getTaskCollectionRef(db, currentUserId).path, id));
+                notify('Task deleted (Real-time).', 'error');
+            } catch (e) {
+                console.error("Error deleting document: ", e);
+                notify('Error deleting task.', 'error');
+            }
+        }
+        
+        // --- 9. LOCAL NOTES ORGANIZER (AI ENHANCED) ---
+        
+        let notes = []; // Notes array is still local for now
+
+        function loadNotes() {
+            const storedNotes = localStorage.getItem('eduProNotes');
+            notes = storedNotes ? JSON.parse(storedNotes) : [];
+            renderNotes();
+        }
+
+        function saveNotes() {
+            localStorage.setItem('eduProNotes', JSON.stringify(notes));
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('noteList');
+            if (!list) return;
+
+            list.innerHTML = '';
+
+            if (notes.length === 0) {
+                list.innerHTML = `<div class="md:col-span-3 text-center text-gray-400 p-6 bg-gray-50 rounded-xl">No notes saved yet.</div>`;
+                return;
+            }
+
+            notes.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = `p-4 rounded-xl shadow-md bg-white border-t-4 border-amber-500 space-y-2 transform transition duration-300 hover:shadow-lg`;
+                noteCard.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h4 class="text-lg font-bold text-gray-800">${note.title}</h4>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">${note.category}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm line-clamp-3">${note.content}</p>
+                    <div class="flex justify-end pt-2 border-t border-gray-100">
+                        <button onclick="deleteNote('${note.id}')" class="text-red-500 hover:text-red-700 transition duration-150 p-1 rounded hover:bg-red-100">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Delete
+                        </button>
+                    </div>
+                `;
+                list.appendChild(noteCard);
+            });
+            lucide.createIcons();
+        }
+
+        window.addNote = function() {
+            const titleInput = document.getElementById('noteTitle');
+            const contentInput = document.getElementById('noteContent');
+            const categoryInput = document.getElementById('noteCategory');
+            
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+            if (!contentInput) return notify('Note content cannot be empty.', 'error'); // Fix: Added contentInput check
+            
+            const category = categoryInput.value;
+
+            if (!title || !content) return notify('Note title and content required.', 'error');
+
+            const newNote = {
+                id: Date.now().toString(),
+                title: title,
+                content: content,
+                category: category,
+                createdAt: new Date().toISOString()
+            };
+
+            notes.unshift(newNote); // Add to beginning
+            saveNotes();
+            renderNotes();
+            
+            titleInput.value = '';
+            contentInput.value = '';
+            notify('Note saved successfully (Local)!', 'success');
+        }
+
+        window.deleteNote = function(id) {
+            notes = notes.filter(n => n.id !== id);
+            saveNotes();
+            renderNotes();
+            notify('Note permanently deleted.', 'error');
+        }
+        
+        // --- NEW AI NOTES FEATURES (UPDATED FOR CONSISTENCY) ---
+
+        function updateNoteAIButtonState() {
+            const content = document.getElementById('noteContent')?.value.trim();
+            // Removed summarizeBtn check since it was removed from UI
+            const elaborateBtn = document.getElementById('elaborateBtn');
+            
+            // Require at least 10 chars to activate AI analysis
+            const isDisabled = (content?.length || 0) < 10; 
+            
+            if (elaborateBtn) elaborateBtn.disabled = isDisabled;
+        }
+
+        window.handleNoteAIAction = async function(action) {
+            if (!isFirebaseAvailable) {
+                return notify('AI features require a configured environment and active connection.', 'error');
+            }
+
+            const noteContent = document.getElementById('noteContent').value.trim();
+            if (noteContent.length < 10) {
+                return notify('Please enter more content to analyze.', 'error');
+            }
+
+            const outputContainer = document.getElementById('aiNoteOutputContainer');
+            const outputContent = document.getElementById('aiNoteOutputContent');
+            const actionBtn = document.getElementById(`${action}Btn`);
+            
+            const originalBtnText = actionBtn.textContent;
+            
+            outputContent.innerHTML = `<i data-lucide="loader-circle" class="w-5 h-5 inline-block animate-spin mr-2"></i> Thinking...`;
+            outputContainer.classList.remove('hidden');
+            actionBtn.disabled = true;
+            actionBtn.textContent = '...Generating';
+            lucide.createIcons();
+
+            let systemInstruction;
+            let userPrompt;
+
+            // Simplified logic since only 'elaborate' remains
+            if (action === 'elaborate') {
+                systemInstruction = "You are a detailed academic explainer. Your task is to take the user's note, identify the main concept, and elaborate on it by adding a short, relevant example or analogy. Respond in a brief paragraph.";
+                userPrompt = `Elaborate on the concepts in the following note: ${noteContent}`;
+            } else {
+                // Fallback for safety, though only 'elaborate' should be possible
+                actionBtn.disabled = false;
+                actionBtn.textContent = originalBtnText;
+                return notify('Invalid AI action or AI feature disabled.', 'error');
+            }
+
+            try {
+                const generatedText = await callGeminiApi(userPrompt, systemInstruction);
+                outputContent.textContent = generatedText;
+                notify(`Note ${action}d successfully!`, 'success');
+            } catch (error) {
+                console.error('AI Action Error:', error);
+                outputContent.innerHTML = `<span class="text-red-600">Error: Failed to get AI response. Check console/API key.</span>`;
+                notify('AI service error.', 'error');
+            } finally {
+                actionBtn.disabled = false;
+                actionBtn.textContent = originalBtnText;
+                // Re-check state just in case content changed while generating
+                updateNoteAIButtonState(); 
+                lucide.createIcons();
+            }
+        }
+
+        window.copyToClipboard = function(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return notify('Element not found.', 'error');
+            
+            const textToCopy = element.textContent || element.innerText;
+            
+            // Simple execution command (best for iframes)
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            notify('Copied AI insight to clipboard!', 'info');
+        }
+        
+        // --- NEW TO-DO LIST AI FEATURE ---
+        
+        let aiBreakdownSuggestions = []; // Stores the last breakdown list from AI
+
+        window.breakdownTask = async function() {
+            if (!isFirebaseAvailable) {
+                return notify('AI features require a configured environment and active connection.', 'error');
+            }
+
+            const input = document.getElementById('newTask');
+            const taskText = input.value.trim();
+            const breakdownOutput = document.getElementById('breakdownOutput');
+            const breakdownContent = document.getElementById('breakdownContent');
+
+            if (taskText.length < 5) return notify('Please enter a full task to break down.', 'error');
+
+            breakdownContent.innerHTML = `<i data-lucide="loader-circle" class="w-4 h-4 inline-block animate-spin mr-2"></i> Analyzing task and generating sub-steps...`;
+            breakdownOutput.classList.remove('hidden');
+            lucide.createIcons();
+
+            const systemInstruction = "You are a specialized productivity assistant. Your task is to take a complex task provided by the user and break it down into exactly 3 to 5 simple, actionable steps. Respond only with a numbered list of the steps, nothing else.";
+            const userPrompt = `Break this task down: "${taskText}"`;
+
+            try {
+                const generatedText = await callGeminiApi(userPrompt, systemInstruction);
+
+                // Assuming Gemini returns a numbered list, split it into an array of tasks
+                aiBreakdownSuggestions = generatedText
+                    .split('\n')
+                    .map(line => line.replace(/^\d+\.\s*/, '').trim())
+                    .filter(line => line.length > 0);
+
+                if (aiBreakdownSuggestions.length > 0) {
+                    breakdownContent.innerHTML = aiBreakdownSuggestions.map(task => `<li>&bull; ${task}</li>`).join('');
+                    notify('AI task breakdown complete!', 'success');
+                } else {
+                    breakdownContent.textContent = "AI could not generate a clear breakdown. Try a different task.";
+                    notify('AI breakdown failed.', 'error');
+                }
+
+            } catch (error) {
+                console.error('Task Breakdown Error:', error);
+                breakdownContent.textContent = "Error: Failed to connect to AI service for task breakdown.";
+                notify('AI service error.', 'error');
+            } finally {
+                lucide.createIcons();
+            }
+        }
+        
+        window.addBreakdownTasks = function() {
+            if (aiBreakdownSuggestions.length === 0) return notify('No tasks to add.', 'error');
+
+            aiBreakdownSuggestions.forEach(taskText => {
+                // Add task one by one to Firestore (or local storage if not available)
+                if (isFirebaseAvailable && currentUserId) {
+                    addDoc(getTaskCollectionRef(db, currentUserId), {
+                        text: taskText,
+                        completed: false,
+                        createdAt: serverTimestamp()
+                    }).catch(e => console.error("Error adding task:", e));
+                } else {
+                    // LOCAL STORAGE FALLBACK
+                    const newTask = {
+                        id: crypto.randomUUID(),
+                        text: taskText,
+                        completed: false,
+                        createdAt: new Date(),
+                    };
+                    allTasks.unshift(newTask);
+                    saveLocalTasks();
+                }
+            });
+
+            // Re-render the tasks list to show the newly added tasks
+            renderTasks();
+
+            // Clear the breakdown UI and input field
+            document.getElementById('breakdownOutput').classList.add('hidden');
+            document.getElementById('breakdownContent').innerHTML = '';
+            document.getElementById('newTask').value = '';
+            aiBreakdownSuggestions = [];
+
+            if (isFirebaseAvailable) {
+                notify(`${aiBreakdownSuggestions.length} tasks added from AI breakdown!`, 'success');
+            } else {
+                 notify(`${aiBreakdownSuggestions.length} tasks added locally!`, 'success');
+            }
+        }
+        
+        // --- NEW VOCABULARY AI FEATURE ---
+        
+        window.explainWord = async function() {
+            if (!isFirebaseAvailable) {
+                return notify('AI features require a configured environment and active connection.', 'error');
+            }
+            const word = document.getElementById('vocabWord').textContent;
+            const wordInsight = document.getElementById('wordInsight');
+            const wordInsightContent = document.getElementById('wordInsightContent');
+            
+            if (!word) return notify('Generate a word first!', 'error');
+
+            wordInsightContent.innerHTML = `<i data-lucide="loader-circle" class="w-4 h-4 inline-block animate-spin mr-2"></i> Generating context for "${word}"...`;
+            wordInsight.classList.remove('hidden');
+            lucide.createIcons();
+            
+            const systemInstruction = "You are a creative vocabulary tutor. Provide a brief, single-paragraph, real-world example or interesting fact that clearly illustrates the meaning and use of the provided word. Do not repeat the definition.";
+            const userPrompt = `Give a real-world example for the word: ${word}`;
+
+            try {
+                const generatedText = await callGeminiApi(userPrompt, systemInstruction);
+                wordInsightContent.textContent = generatedText;
+                notify(`Context for "${word}" generated!`, 'success');
+            } catch (error) {
+                console.error('Word Explanation Error:', error);
+                wordInsightContent.textContent = "Error: Could not retrieve AI context for the word.";
+                notify('AI service error.', 'error');
+            } finally {
+                lucide.createIcons();
+            }
+        }
+    </script>
+</body>
+</html>
+
+
